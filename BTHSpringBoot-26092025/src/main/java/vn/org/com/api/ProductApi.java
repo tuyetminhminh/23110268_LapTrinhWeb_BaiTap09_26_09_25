@@ -23,7 +23,7 @@ public class ProductApi {
                               @RequestParam(required=false) Long categoryId,
                               @RequestParam(defaultValue="0") int page,
                               @RequestParam(defaultValue="10") int size){
-        return productService.search(q, categoryId, PageRequest.of(page, size, Sort.by("productId").descending()));
+        return productService.search(q, categoryId, PageRequest.of(page, size, Sort.by("id").descending()));
     }
 
     @GetMapping("/{id}")
@@ -33,24 +33,24 @@ public class ProductApi {
 
     @PostMapping
     public Product create(@Valid @RequestBody Product p){
-        if (p.getCategory()!=null && p.getCategory().getCategoryId()!=null){
-            Category c = categoryService.findById(p.getCategory().getCategoryId()).orElseThrow();
+        if (p.getCategory()!=null && p.getCategory().getId()!=null){
+            Category c = categoryService.findById(p.getCategory().getId()).orElseThrow();
             p.setCategory(c);
         }
-        p.setProductId(null);
+        p.setId(null);
         return productService.save(p);
     }
 
     @PutMapping("/{id}")
     public Product update(@PathVariable Long id, @Valid @RequestBody Product p){
         Product old = productService.findById(id).orElseThrow();
-        old.setProductCode(p.getProductCode());
-        old.setProductName(p.getProductName());
-        old.setUnitPrice(p.getUnitPrice());
-        old.setActive(p.getActive());
+        old.setTitle(p.getTitle());
+        old.setQuantity(p.getQuantity());
+        old.setDescription(p.getDescription());
+        old.setPrice(p.getPrice());
 
-        if (p.getCategory()!=null && p.getCategory().getCategoryId()!=null){
-            Category c = categoryService.findById(p.getCategory().getCategoryId()).orElseThrow();
+        if (p.getCategory()!=null && p.getCategory().getId()!=null){
+            Category c = categoryService.findById(p.getCategory().getId()).orElseThrow();
             old.setCategory(c);
         } else {
             old.setCategory(null);

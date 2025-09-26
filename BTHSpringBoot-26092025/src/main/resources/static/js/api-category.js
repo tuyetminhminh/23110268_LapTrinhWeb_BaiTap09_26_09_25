@@ -5,11 +5,11 @@ async function loadCategories() {
   const json = await res.json();
   const rows = (json.body || []).map(c => `
     <tr>
-      <td>${c.categoryId}</td>
-      <td>${c.categoryName}</td>
+      <td>${c.id}</td>
+      <td>${c.name}</td>
       <td>
-        <button class="btn btn-sm btn-primary" onclick="editCat(${c.categoryId})">Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="delCat(${c.categoryId})">Delete</button>
+        <button class="btn btn-sm btn-primary" onclick="editCat(${c.id})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="delCat(${c.id})">Delete</button>
       </td>
     </tr>`).join('');
   document.querySelector('#catTable tbody').innerHTML = rows;
@@ -20,7 +20,7 @@ async function createCategory() {
   const res = await fetch(API, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({categoryName:name})
+    body: JSON.stringify({name:name})
   });
   await loadCategories();
 }
@@ -31,7 +31,7 @@ async function editCat(id) {
   await fetch(`${API}/${id}`, {
     method:'PUT',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({categoryName:name})
+    body: JSON.stringify({name:name})
   });
   await loadCategories();
 }

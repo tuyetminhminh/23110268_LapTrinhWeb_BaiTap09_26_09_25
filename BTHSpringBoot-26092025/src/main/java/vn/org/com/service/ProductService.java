@@ -18,6 +18,6 @@ public interface ProductService {
 
 	Page<Product> findAll(String q, Long categoryId, Pageable pageable);
 	
-	boolean existsByProductCode(String code);
+        boolean existsByTitle(String title);
 	Page<Product> search(String q, Long categoryId, int page, int size);
 }

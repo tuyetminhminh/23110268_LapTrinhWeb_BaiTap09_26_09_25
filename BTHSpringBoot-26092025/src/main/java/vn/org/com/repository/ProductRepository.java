@@ -14,31 +14,25 @@ import vn.org.com.entity.Product;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	// tìm theo tên sản phẩm
-    Page<Product> findByProductNameContainingIgnoreCase(String q, Pageable pageable);
+    Page<Product> findByTitleContainingIgnoreCase(String q, Pageable pageable);
 
-    // (tuỳ chọn) tìm theo code
-    Page<Product> findByProductCodeContainingIgnoreCase(String q, Pageable pageable);
+    Page<Product> findByCategory_Id(Long categoryId, Pageable pageable);
 
-    // (tuỳ chọn) lọc theo category
-    Page<Product> findByCategory_CategoryId(Long categoryId, Pageable pageable);
-
-    // (tuỳ chọn) tên + category
-    Page<Product> findByProductNameContainingIgnoreCaseAndCategory_CategoryId(
+    Page<Product> findByTitleContainingIgnoreCaseAndCategory_Id(
             String q, Long categoryId, Pageable pageable);
 
-	List<Product> findByProductNameContaining(String name);
+    List<Product> findByTitleContaining(String name);
 
-	Page<Product> findByProductNameContaining(String name, Pageable pageable);
+    Page<Product> findByTitleContaining(String name, Pageable pageable);
 
-	Optional<Product> findByProductName(String name);
+    Optional<Product> findByTitle(String name);
 
-	boolean existsByProductCode(String productCode);
- 
-	@Query("""
-			SELECT p FROM Product p
-			WHERE (:q IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%',:q,'%'))
-			       OR LOWER(p.productCode) LIKE LOWER(CONCAT('%',:q,'%')))
-			  AND (:catId IS NULL OR p.category.categoryId = :catId)
-			""")
-	Page<Product> search(@Param("q") String q, @Param("catId") Long catId, Pageable pageable);
+    boolean existsByTitle(String title);
+
+    @Query("""
+                    SELECT p FROM Product p
+                    WHERE (:q IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%',:q,'%')))
+                      AND (:catId IS NULL OR p.category.id = :catId)
+                    """)
+    Page<Product> search(@Param("q") String q, @Param("catId") Long catId, Pageable pageable);
 }

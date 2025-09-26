@@ -19,7 +19,7 @@ public class CategoryApi {
     public Page<Category> list(@RequestParam(defaultValue="") String q,
                                @RequestParam(defaultValue="0") int page,
                                @RequestParam(defaultValue="10") int size){
-        return categoryService.search(q, PageRequest.of(page, size, Sort.by("categoryId").descending()));
+        return categoryService.search(q, PageRequest.of(page, size, Sort.by("id").descending()));
     }
 
     @GetMapping("/{id}")
@@ -29,14 +29,15 @@ public class CategoryApi {
 
     @PostMapping
     public Category create(@Valid @RequestBody Category c){
-        c.setCategoryId(null);
+        c.setId(null);
         return categoryService.save(c);
     }
 
     @PutMapping("/{id}")
     public Category update(@PathVariable Long id, @Valid @RequestBody Category c){
         Category old = categoryService.findById(id).orElseThrow();
-        old.setCategoryName(c.getCategoryName());
+        old.setName(c.getName());
+        old.setImages(c.getImages());
         return categoryService.save(old);
     }
 

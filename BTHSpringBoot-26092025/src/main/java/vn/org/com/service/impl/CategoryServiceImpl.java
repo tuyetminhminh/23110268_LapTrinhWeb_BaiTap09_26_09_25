@@ -40,16 +40,16 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public Page<Category> search(String name, Pageable pageable) {
-		return (name == null || name.isBlank()) ? repo.findAll(pageable)
-				: repo.findByCategoryNameContainingIgnoreCase(name, pageable);
-	}
+        public Page<Category> search(String name, Pageable pageable) {
+                return (name == null || name.isBlank()) ? repo.findAll(pageable)
+                                : repo.findByNameContainingIgnoreCase(name, pageable);
+        }
 
 
-	public boolean nameExists(String name, Long excludeId) {
-		return (excludeId == null) ? repo.existsByCategoryNameIgnoreCase(name)
-				: repo.existsByCategoryNameIgnoreCaseAndCategoryIdNot(name, excludeId);
-	}
+        public boolean nameExists(String name, Long excludeId) {
+                return (excludeId == null) ? repo.existsByNameIgnoreCase(name)
+                                : repo.existsByNameIgnoreCaseAndIdNot(name, excludeId);
+        }
 
 	@Override
     public Page<Category> findAll(Pageable pageable) {

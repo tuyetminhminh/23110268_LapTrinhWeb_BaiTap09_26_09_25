@@ -7,20 +7,23 @@ import lombok.Setter;
 @Getter @Setter
 public class CategoryModel {
 
-    private Long categoryId;
+    private Long id;
 
-    @NotBlank(message = "{category.name.required}") 
-    private String categoryName;
+    @NotBlank(message = "{category.name.required}")
+    private String name;
 
-    // dùng để biết đang Add hay Edit (phục vụ hiển thị form và xử lý)
+    private String images;
+
     private Boolean isEdit = false;
 
-    // ===== GET/SET =====
-    public Long getCategoryId() { return categoryId; }
-    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getCategoryName() { return categoryName; }
-    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getImages() { return images; }
+    public void setImages(String images) { this.images = images; }
 
     public Boolean getIsEdit() { return isEdit; }
     public void setIsEdit(Boolean isEdit) { this.isEdit = isEdit; }
