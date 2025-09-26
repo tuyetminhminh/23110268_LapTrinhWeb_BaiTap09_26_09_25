@@ -22,32 +22,33 @@ public class CategoryGraphQLController {
     }
 
     @QueryMapping
-    public Category getCategory(@Argument Long categoryId) {
-        return categoryRepository.findById(categoryId).orElse(null);
+    public Category getCategory(@Argument Long id) {
+        return categoryRepository.findById(id).orElse(null);
     }
 
     @MutationMapping
-    public Category createCategory(@Argument String categoryName, @Argument String icon) {
-        Category category = new Category();
-        category.setCategoryName(categoryName);
-        category.setIcon(icon);
+    public Category createCategory(@Argument String name, @Argument String images) {
+        Category category = Category.builder()
+                .name(name)
+                .images(images)
+                .build();
         return categoryRepository.save(category);
     }
 
     @MutationMapping
-    public Category updateCategory(@Argument Long categoryId, @Argument String categoryName, @Argument String icon) {
-        Optional<Category> opt = categoryRepository.findById(categoryId);
+    public Category updateCategory(@Argument Long id, @Argument String name, @Argument String images) {
+        Optional<Category> opt = categoryRepository.findById(id);
         if (opt.isEmpty()) return null;
         Category category = opt.get();
-        if (categoryName != null) category.setCategoryName(categoryName);
-        if (icon != null) category.setIcon(icon);
+        if (name != null) category.setName(name);
+        if (images != null) category.setImages(images);
         return categoryRepository.save(category);
     }
 
     @MutationMapping
-    public Boolean deleteCategory(@Argument Long categoryId) {
-        if (!categoryRepository.existsById(categoryId)) return false;
-        categoryRepository.deleteById(categoryId);
+    public Boolean deleteCategory(@Argument Long id) {
+        if (!categoryRepository.existsById(id)) return false;
+        categoryRepository.deleteById(id);
         return true;
     }
 }

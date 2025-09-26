@@ -18,13 +18,13 @@
 
   <form class="row g-2 mb-3" th:action="@{/admin/products}" method="get">
     <div class="col-auto">
-      <input class="form-control" type="text" name="q" th:value="${q}" placeholder="Nhập tên sản phẩm ...">
+      <input class="form-control" type="text" name="q" th:value="${q}" placeholder="Nhập tiêu đề sản phẩm ...">
     </div>
     <div class="col-auto">
       <select class="form-select" name="categoryId">
         <option value="" th:selected="${categoryId == null}">-- Tất cả thể loại --</option>
-        <option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}"
-                th:selected="${categoryId} == ${c.categoryId}"></option>
+        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"
+                th:selected="${categoryId} == ${c.id}"></option>
       </select>
     </div>
     <div class="col-auto">
@@ -39,29 +39,26 @@
       <thead>
       <tr>
         <th style="width: 90px">ID</th>
-        <th style="width: 140px">Mã</th>
-        <th>Tên</th>
-        <th class="text-end" style="width: 140px">Đơn giá</th>
-        <th style="width: 110px">Trạng thái</th>
-        <th style="width: 220px">Thể loại</th>
+        <th>Tiêu đề</th>
+        <th class="text-end" style="width: 120px">Số lượng</th>
+        <th style="width: 260px">Mô tả</th>
+        <th class="text-end" style="width: 140px">Giá bán</th>
+        <th style="width: 200px">Thể loại</th>
         <th class="text-end" style="width: 180px">Hành động</th>
       </tr>
       </thead>
       <tbody>
       <tr th:each="p : ${pageData.content}">
-        <td th:text="${p.productId}">1</td>
-        <td th:text="${p.productCode}">SP001</td>
-        <td th:text="${p.productName}">Tên</td>
-        <td class="text-end" th:text="${#numbers.formatDecimal(p.unitPrice, 0, 'COMMA', 2, 'POINT')}">0.00</td>
-        <td>
-          <span th:text="${p.active} ? 'Đang bán' : 'Ngừng bán'"
-                th:classappend="${p.active} ? 'badge bg-success' : 'badge bg-secondary'">Đang bán</span>
-        </td>
-        <td th:text="${p.category != null ? p.category.categoryName : ''}">Thể loại</td>
+        <td th:text="${p.id}">1</td>
+        <td th:text="${p.title}">Tên</td>
+        <td class="text-end" th:text="${p.quantity}">0</td>
+        <td th:text="${p.description}">Mô tả</td>
+        <td class="text-end" th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+        <td th:text="${p.category != null ? p.category.name : ''}">Thể loại</td>
         <td class="text-end">
           <a class="btn btn-sm btn-outline-primary me-1"
-             th:href="@{/admin/products/{id}/edit(id=${p.productId}, page=${current}, size=${size}, q=${q}, categoryId=${categoryId})}">Sửa</a>
-          <form th:action="@{/admin/products/{id}/delete(id=${p.productId})}" method="post" class="d-inline">
+             th:href="@{/admin/products/{id}/edit(id=${p.id}, page=${current}, size=${size}, q=${q}, categoryId=${categoryId})}">Sửa</a>
+          <form th:action="@{/admin/products/{id}/delete(id=${p.id})}" method="post" class="d-inline">
             <input type="hidden" name="page" th:value="${current}">
             <input type="hidden" name="size" th:value="${size}">
             <input type="hidden" name="q" th:value="${q}">

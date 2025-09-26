@@ -2,9 +2,6 @@ package vn.org.com.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Date;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -16,40 +13,39 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = "category")
+@ToString(exclude = {"category", "user"})
 public class Product implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long productId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @EqualsAndHashCode.Include
+    private Long id;
 
-	@Column(length = 50, unique = true, nullable = false)
-	@NotBlank(message = "Mã SP không được trống")
-	private String productCode;
+    @Column(name = "title", columnDefinition = "NVARCHAR(255)", nullable = false)
+    @NotBlank(message = "Tiêu đề sản phẩm không được trống")
+    private String title;
 
-	@Column(columnDefinition = "NVARCHAR(255)", nullable = false)
-	@NotBlank(message = "Tên SP không được trống")
-	private String productName;
+    @Column(name = "quantity", nullable = false)
+    @PositiveOrZero
+    @NotNull(message = "Số lượng không được trống")
+    private Integer quantity;
 
-	@PositiveOrZero
-	@NotNull(message = "Đơn giá không được trống")
-	@DecimalMin(value = "0.0", inclusive = true, message = "Đơn giá phải >= 0")
-	@Column(precision=12, scale=2)
-	private BigDecimal unitPrice;
-	
-	@NotNull
-	private Boolean active = true;
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "category_id")
-	private Category category;
+    @Column(name = "price", precision = 12, scale = 2, nullable = false)
+    @DecimalMin(value = "0.0", inclusive = true, message = "Đơn giá phải >= 0")
+    @NotNull(message = "Giá bán không được trống")
+    private BigDecimal price;
 
-	// Many-to-one with User
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
-	public void setProductId(Long productId) { this.productId = productId; }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

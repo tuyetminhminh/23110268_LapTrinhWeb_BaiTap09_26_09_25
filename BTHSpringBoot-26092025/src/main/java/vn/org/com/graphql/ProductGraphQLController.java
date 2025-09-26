@@ -26,7 +26,7 @@ public class ProductGraphQLController {
     public List<Product> allProductsSortedByPrice() {
         return productRepository.findAll()
                 .stream()
-                .sorted((a, b) -> a.getUnitPrice().compareTo(b.getUnitPrice()))
+                .sorted((a, b) -> a.getPrice().compareTo(b.getPrice()))
                 .toList();
     }
 
@@ -42,15 +42,20 @@ public class ProductGraphQLController {
     }
 
     @MutationMapping
-    public Product createProduct(@Argument String productCode, @Argument String productName, @Argument Double unitPrice, @Argument Boolean active, @Argument Long categoryId, @Argument Long userId) {
+    public Product createProduct(@Argument String title,
+                                 @Argument Integer quantity,
+                                 @Argument String description,
+                                 @Argument Double price,
+                                 @Argument Long categoryId,
+                                 @Argument Long userId) {
         Category category = categoryRepository.findById(categoryId).orElse(null);
         User user = userRepository.findById(userId).orElse(null);
-        if (category == null || user == null) return null;
+        if (category == null || user == null || price == null) return null;
         Product product = Product.builder()
-                .productCode(productCode)
-                .productName(productName)
-                .unitPrice(java.math.BigDecimal.valueOf(unitPrice))
-                .active(active != null ? active : true)
+                .title(title)
+                .quantity(quantity != null ? quantity : 0)
+                .description(description)
+                .price(java.math.BigDecimal.valueOf(price))
                 .category(category)
                 .user(user)
                 .build();
@@ -58,14 +63,20 @@ public class ProductGraphQLController {
     }
 
     @MutationMapping
-    public Product updateProduct(@Argument Long productId, @Argument String productCode, @Argument String productName, @Argument Double unitPrice, @Argument Boolean active, @Argument Long categoryId, @Argument Long userId) {
+    public Product updateProduct(@Argument Long productId,
+                                 @Argument String title,
+                                 @Argument Integer quantity,
+                                 @Argument String description,
+                                 @Argument Double price,
+                                 @Argument Long categoryId,
+                                 @Argument Long userId) {
         Optional<Product> opt = productRepository.findById(productId);
         if (opt.isEmpty()) return null;
         Product product = opt.get();
-        if (productCode != null) product.setProductCode(productCode);
-        if (productName != null) product.setProductName(productName);
-        if (unitPrice != null) product.setUnitPrice(java.math.BigDecimal.valueOf(unitPrice));
-        if (active != null) product.setActive(active);
+        if (title != null) product.setTitle(title);
+        if (quantity != null) product.setQuantity(quantity);
+        if (description != null) product.setDescription(description);
+        if (price != null) product.setPrice(java.math.BigDecimal.valueOf(price));
         if (categoryId != null) {
             Category category = categoryRepository.findById(categoryId).orElse(null);
             if (category != null) product.setCategory(category);
