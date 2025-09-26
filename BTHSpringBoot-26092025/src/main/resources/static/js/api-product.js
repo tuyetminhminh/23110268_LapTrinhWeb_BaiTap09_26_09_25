@@ -16,15 +16,15 @@ async function loadProductPage() {
 
   const rows = (page.content || []).map(p => `
     <tr>
-      <td>${p.productId}</td>
-      <td>${p.productCode}</td>
-      <td>${p.productName}</td>
-      <td class="text-end">${p.unitPrice}</td>
-      <td>${p.active ? 'Yes':'No'}</td>
-      <td>${p.category ? p.category.categoryName : ''}</td>
+      <td>${p.id}</td>
+      <td>${p.title}</td>
+      <td class="text-end">${p.quantity}</td>
+      <td>${p.description || ''}</td>
+      <td class="text-end">${p.price}</td>
+      <td>${p.category ? p.category.name : ''}</td>
       <td class="text-end">
-        <button class="btn btn-sm btn-primary" onclick="openEdit(${p.productId})">Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="delProduct(${p.productId})">Delete</button>
+        <button class="btn btn-sm btn-primary" onclick="openEdit(${p.id})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="delProduct(${p.id})">Delete</button>
       </td>
     </tr>`).join('');
 
@@ -37,13 +37,13 @@ async function loadCategoryOptions(selectEl) {
   const res = await fetch(CAPI + '?size=999&page=0');
   const page = await res.json();
   selectEl.innerHTML = `<option value="">-- Category --</option>` +
-    (page.content||[]).map(c=>`<option value="${c.categoryId}">${c.categoryName}</option>`).join('');
+    (page.content||[]).map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
 }
 
 function openCreate(){
   const f = document.forms['pForm'];
   f.reset();
-  f['productId'].value = '';
+  f['id'].value = '';
   loadCategoryOptions(f['categoryId']);
   const modal = new bootstrap.Modal('#pModal'); modal.show();
 }
@@ -51,13 +51,13 @@ function openCreate(){
 async function openEdit(id){
   const res = await fetch(`${PAPI}/${id}`); const p = await res.json();
   const f = document.forms['pForm'];
-  f['productId'].value = p.productId;
-  f['productCode'].value = p.productCode;
-  f['productName'].value = p.productName;
-  f['unitPrice'].value = p.unitPrice;
-  f['active'].checked = !!p.active;
+  f['id'].value = p.id;
+  f['title'].value = p.title;
+  f['quantity'].value = p.quantity;
+  f['description'].value = p.description || '';
+  f['price'].value = p.price;
   await loadCategoryOptions(f['categoryId']);
-  if (p.category) f['categoryId'].value = p.category.categoryId;
+  if (p.category) f['categoryId'].value = p.category.id;
   const modal = new bootstrap.Modal('#pModal'); modal.show();
 }
 
@@ -65,15 +65,15 @@ async function submitProduct(ev){
   ev.preventDefault();
   const f = ev.target;
   const dto = {
-    productCode: f['productCode'].value.trim(),
-    productName: f['productName'].value.trim(),
-    unitPrice: parseFloat(f['unitPrice'].value || '0'),
-    active: f['active'].checked,
+    title: f['title'].value.trim(),
+    quantity: parseInt(f['quantity'].value || '0', 10),
+    description: f['description'].value.trim(),
+    price: parseFloat(f['price'].value || '0'),
   };
   const catId = f['categoryId'].value;
-  if (catId) dto.category = { categoryId: Number(catId) };
+  if (catId) dto.category = { id: Number(catId) };
 
-  const hasId = f['productId'].value;
+  const hasId = f['id'].value;
   const res = await fetch(hasId ? `${PAPI}/${hasId}` : PAPI, {
     method: hasId ? 'PUT' : 'POST',
     headers: {'Content-Type':'application/json'},

@@ -21,16 +21,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-	private final ProductRepository repo;
+        private final ProductRepository repo;
 	
 	@Override
     public Page<Product> findAll(String q, Long categoryId, Pageable pageable) {
         String keyword = (q == null) ? "" : q.trim();
         if (categoryId != null) {
-            return repo.findByProductNameContainingIgnoreCaseAndCategory_CategoryId(keyword, categoryId, pageable);
+            return repo.findByTitleContainingIgnoreCaseAndCategory_Id(keyword, categoryId, pageable);
         }
         return keyword.isEmpty() ? repo.findAll(pageable)
-                                 : repo.findByProductNameContainingIgnoreCase(keyword, pageable);
+                                 : repo.findByTitleContainingIgnoreCase(keyword, pageable);
     }
 
 	@Override
@@ -52,25 +52,24 @@ public class ProductServiceImpl implements ProductService {
     public Page<Product> search(String q, Pageable pageable) {
         String keyword = (q == null) ? "" : q.trim();
         if (keyword.isEmpty()) return repo.findAll(pageable);
-        return repo.findByProductNameContainingIgnoreCase(keyword, pageable);
+        return repo.findByTitleContainingIgnoreCase(keyword, pageable);
     }
-	public boolean existsByProductCode(String code) {
-		return repo.existsByProductCode(code);
-	}
+        public boolean existsByTitle(String title) {
+                return repo.existsByTitle(title);
+        }
 
 	@Override
 	public Page<Product> search(String q, Long categoryId, Pageable pageable) {
 	    Product probe = new Product();
 
-	    if (q != null && !q.trim().isEmpty()) {
-	        // chỉ có thể match 1 thuộc tính; thường chọn tên sản phẩm
-	        probe.setProductName(q.trim());
-	    }
-	    if (categoryId != null) {
-	        Category c = new Category();
-	        c.setCategoryId(categoryId);
-	        probe.setCategory(c);
-	    }
+            if (q != null && !q.trim().isEmpty()) {
+                probe.setTitle(q.trim());
+            }
+            if (categoryId != null) {
+                Category c = new Category();
+                c.setId(categoryId);
+                probe.setCategory(c);
+            }
 
 	    ExampleMatcher matcher = ExampleMatcher.matchingAll()
 	            .withIgnoreCase()
@@ -84,8 +83,8 @@ public class ProductServiceImpl implements ProductService {
 	public Page<Product> search(String q, Long categoryId, int page, int size) {
 		int p = Math.max(0, page - 1);
         int s = Math.max(1, size);
-        Pageable pageable = PageRequest.of(p, s, Sort.by(Sort.Direction.DESC, "productId"));
+        Pageable pageable = PageRequest.of(p, s, Sort.by(Sort.Direction.DESC, "id"));
         return search(q, categoryId, pageable);
-	}
+        }
 
 }

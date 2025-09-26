@@ -11,27 +11,26 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Category implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "category_id") // <--- thêm rõ ràng
-	private Long categoryId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-	@Column(name = "category_name", nullable = false, columnDefinition = "NVARCHAR(255)")
-	@NotBlank(message = "Tên danh mục không được trống")
-	private String categoryName;
-	
-	@Column(name = "icon", columnDefinition = "NVARCHAR(255)")
-	private String icon;
-	
-	
-	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-	private Set<Product> products;
+    @Column(name = "name", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @NotBlank(message = "Tên danh mục không được trống")
+    private String name;
 
-	// Many-to-many with User
-	@ManyToMany(mappedBy = "categories")
-	private Set<User> users;
+    @Column(name = "images", columnDefinition = "NVARCHAR(255)")
+    private String images;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Product> products;
+
+    @ManyToMany(mappedBy = "categories")
+    private Set<User> users;
 }
