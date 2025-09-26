@@ -46,7 +46,9 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
 
+
         @Override
+
         public boolean nameExists(String name, Long excludeId) {
                 return (excludeId == null) ? repo.existsByNameIgnoreCase(name)
                                 : repo.existsByNameIgnoreCaseAndIdNot(name, excludeId);
