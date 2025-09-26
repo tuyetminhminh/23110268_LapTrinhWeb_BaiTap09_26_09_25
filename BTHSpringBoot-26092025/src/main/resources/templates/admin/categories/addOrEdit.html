@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/base}">
+<head>
+<title th:text="${category.isEdit} ? 'Sửa thể loại' : 'Thêm thể loại'">Thể
+	loại</title>
+</head>
+<body>
+	<section layout:fragment="content">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-12 col-md-7 col-lg-5">
+					<div class="card shadow-sm">
+						<div class="card-header bg-brand text-white">
+							<strong
+								th:text="${category.categoryId} != null ? 'Cập nhật thể loại' : 'Thêm thể loại'">Thêm
+								thể loại</strong>
+						</div>
+						<div class="card-body">
+							<form th:action="@{/admin/categories/saveOrUpdate}"
+								th:object="${category}" method="post" novalidate>
+								<!-- id & cờ isEdit -->
+								<input type="hidden" th:field="*{categoryId}"> <input
+									type="hidden" th:field="*{isEdit}">
+
+								<!-- GIỮ THAM SỐ để sau khi Lưu/Hủy quay về đúng trang đang đứng -->
+								<input type="hidden" name="page" th:value="${page}"> <input
+									type="hidden" name="size" th:value="${size}"> <input
+									type="hidden" name="name" th:value="${name}">
+
+								<div class="mb-3">
+									<label class="form-label" for="categoryName">Tên thể
+										loại</label> <input id="categoryName" type="text" class="form-control"
+										th:classappend="${#fields.hasErrors('categoryName')} ? ' is-invalid' : ''"
+										th:field="*{categoryName}" placeholder="Nhập tên thể loại...">
+									<div class="invalid-feedback"
+										th:if="${#fields.hasErrors('categoryName')}"
+										th:errors="*{categoryName}">
+										<!-- sẽ hiện messages_vi.properties -->
+									</div>
+									<div class="form-text text-muted">Ví dụ: Bánh Chưng, Bánh
+										Tét...</div>
+								</div>
+
+								<div class="d-flex justify-content-end gap-2">
+									<a class="btn btn-outline-secondary"
+										th:href="@{/admin/categories/searchpaginated(page=${page}, size=${size}, name=${name})}">Hủy</a>
+									<button type="submit" class="btn btn-brand">Lưu</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>
