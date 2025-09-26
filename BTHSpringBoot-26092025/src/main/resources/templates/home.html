@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Trang chủ</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="row justify-content-center align-items-center min-vh-60">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-5">
+                    <img src="/image/minh.jpg" alt="Logo" class="mb-4 rounded-circle shadow" style="width: 80px; height: 80px;">
+                    <h1 class="display-5 mb-3">Chào mừng bạn đến với cửa hàng sản phẩm!</h1>
+                    <p class="lead mb-4">Khám phá và mua sắm các sản phẩm chất lượng, dễ dàng quản lý thể loại, sản phẩm và người dùng.</p>
+                    <a href="/admin/products" class="btn btn-brand btn-lg px-4">Xem sản phẩm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

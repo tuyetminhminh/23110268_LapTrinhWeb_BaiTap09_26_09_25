@@ -19,7 +19,7 @@
                                                 </div>
                                                 <div class="card-body">
                                                         <form th:action="@{/admin/categories/saveOrUpdate}"
-                                                                th:object="${category}" method="post" novalidate>
+      th:object="${category}" method="post" enctype="multipart/form-data" novalidate>
                                                                 <!-- id & cờ isEdit -->
                                                                 <input type="hidden" th:field="*{id}"> <input
                                                                         type="hidden" th:field="*{isEdit}">
@@ -45,8 +45,11 @@
 
                                                                 <div class="mb-3">
                                                                         <label class="form-label" for="categoryImages">Hình ảnh</label>
-                                                                        <input id="categoryImages" type="text" class="form-control"
-                                                                               th:field="*{images}" placeholder="Link hình ảnh hoặc tên file">
+                                                                        <input id="categoryImages" name="imageFile" type="file" class="form-control">
+                                                                        <div class="form-text text-muted">Chọn hình ảnh từ máy tính của bạn.</div>
+                                                                        <div th:if="${category.images != null}">
+                                                                            <img th:src="@{'/image/' + ${category.images}}" alt="Ảnh hiện tại" class="img-thumbnail mt-2" style="max-width: 120px;">
+                                                                        </div>
                                                                 </div>
 
 								<div class="d-flex justify-content-end gap-2">

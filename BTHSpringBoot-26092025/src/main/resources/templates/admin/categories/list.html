@@ -31,11 +31,12 @@
 			th:text="${message}"></div>
 
 		<div class="table-responsive">
-			<table class="table table-striped align-middle">
-				<thead>
+			<table class="table table-hover table-striped align-middle shadow-sm rounded">
+				<thead class="table-light">
 					<tr>
-						<th style="width: 120px">ID</th>
+						<th style="width: 80px">ID</th>
 						<th>Tên thể loại</th>
+						<th style="width: 120px">Hình ảnh</th>
 						<th style="width: 180px" class="text-end">Hành động</th>
 					</tr>
 				</thead>
@@ -43,12 +44,18 @@
 					<tr th:each="c : ${categoryPage.content}">
                                                 <td th:text="${c.id}">1</td>
                                                 <td th:text="${c.name}">Action</td>
-                                                <td class="text-end"><a
-                                                        class="btn btn-sm btn-outline-primary me-1"
-                                                        th:href="@{/admin/categories/edit/{id}(id=${c.id}, page=${current}, size=${size}, name=${name})}">Sửa</a>
+                                                <td>
+                                                    <img th:if="${c.images != null}" th:src="@{'/image/' + ${c.images}}" alt="Ảnh" class="img-thumbnail" style="max-width: 60px;">
+                                                    <span th:if="${c.images == null}" class="badge bg-secondary">Không có</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <a class="btn btn-sm btn-outline-primary me-1"
+                                                        th:href="@{/admin/categories/edit/{id}(id=${c.id}, page=${current}, size=${size}, name=${name})}"
+                                                        title="Sửa"><i class="bi bi-pencil"></i> Sửa</a>
                                                         <a class="btn btn-sm btn-outline-danger"
                                                         th:href="@{/admin/categories/delete/{id}(id=${c.id}, page=${current}, size=${size}, name=${name})}"
-                                                        onclick="return confirm('Xóa thể loại này?')">Xóa</a></td>
+                                                        title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa?');"><i class="bi bi-trash"></i> Xóa</a>
+                                                </td>
 
 					</tr>
 					<tr th:if="${#lists.isEmpty(categoryPage.content)}">
