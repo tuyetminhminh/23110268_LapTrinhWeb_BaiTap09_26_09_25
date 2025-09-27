@@ -15,7 +15,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import vn.org.com.entity.Category;
 import vn.org.com.models.CategoryModel;
 import vn.org.com.service.CategoryService;
+import vn.org.com.service.FileStorageService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -26,6 +28,8 @@ import java.util.stream.IntStream;
 public class AdminCategoryController {
 
     private final CategoryService categoryService;
+
+    private final FileStorageService fileStorageService;
 
     @GetMapping
     public String list(@RequestParam(name = "name", defaultValue = "") String name,
@@ -98,11 +102,25 @@ public class AdminCategoryController {
         if (categoryService.nameExists(form.getName(), form.getId())) {
             result.rejectValue("name", "category.name.duplicate", "Tên thể loại đã tồn tại");
         }
+        if (!result.hasErrors()) {
+            String oldImagePath = form.getImages();
+            try {
+                String storedPath = fileStorageService.store(form.getImageFile(), "images");
+                if (storedPath != null) {
+                    if (Boolean.TRUE.equals(form.getIsEdit())) {
+                        fileStorageService.deleteIfExists(oldImagePath);
+                    }
+                    form.setImages(storedPath);
+                }
+            } catch (IOException e) {
+                result.rejectValue("imageFile", "category.image.upload", "Không thể lưu hình ảnh");
+            }
+        }
 
         if (result.hasErrors()) {
             model.addAttribute("page", page);
             model.addAttribute("size", size);
-            model.addAttribute("name", name);
+            model.addAttribute("name", name == null ? "" : name.trim());
             return "admin/categories/addOrEdit";
         }
 
@@ -133,7 +151,7 @@ public class AdminCategoryController {
         Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(Sort.Direction.DESC, "id"));
         Page<Category> categoryPage = categoryService.search(name, pageable);
         model.addAttribute("categoryPage", categoryPage);
-        model.addAttribute("name", name);
+        model.addAttribute("name", name == null ? "" : name.trim());
         model.addAttribute("size", pageSize);
         List<Integer> pageNumbers = (categoryPage.getTotalPages() > 0)
                 ? IntStream.rangeClosed(1, categoryPage.getTotalPages()).boxed().toList()
@@ -142,11 +160,14 @@ public class AdminCategoryController {
     }
 
     private String buildRedirectUrl(int page, int size, String name) {
-        return UriComponentsBuilder.fromPath("/admin/categories/searchpaginated")
+        return "redirect:" + UriComponentsBuilder
+                .fromPath("/admin/categories/searchpaginated")
                 .queryParam("page", page)
                 .queryParam("size", size)
-                .queryParam("name", name)
+                .queryParam("name", (name == null ? "" : name.trim()))
                 .build()
+                .encode()      // quan trọng cho tiếng Việt
                 .toUriString();
     }
+
 }
