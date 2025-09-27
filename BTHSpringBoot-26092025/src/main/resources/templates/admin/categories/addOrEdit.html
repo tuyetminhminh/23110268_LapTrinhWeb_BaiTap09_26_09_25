@@ -28,7 +28,10 @@
 								<!-- giữ đường dẫn hình hiện tại khi chỉnh sửa -->
 								<input type="hidden" th:field="*{images}">
 
-								<!-- GIỮ THAM SỐ để sau khi Lưu/Hủy quay về đúng trang đang đứng -->
+                                                                <!-- giữ đường dẫn hình hiện tại khi chỉnh sửa -->
+                                                                <input type="hidden" th:field="*{images}">
+
+                                                                <!-- GIỮ THAM SỐ để sau khi Lưu/Hủy quay về đúng trang đang đứng -->
 								<input type="hidden" name="page" th:value="${page}"> <input
 									type="hidden" name="size" th:value="${size}"> <input
 									type="hidden" name="name" th:value="${name}">
@@ -46,25 +49,20 @@
 										tươi, Sữa chua,...</div>
 								</div>
 
-								<div class="mb-3">
-									<label class="form-label" for="categoryImages">Hình ảnh</label>
-									<input id="categoryImages" type="file" class="form-control"
-										th:field="*{imageFile}"
-										th:classappend="${#fields.hasErrors('imageFile')} ? ' is-invalid' : ''">
-									<div class="invalid-feedback d-block"
-										th:if="${#fields.hasErrors('imageFile')}"
-										th:errors="*{imageFile}"></div>
-									<div class="form-text text-muted">Chọn hình ảnh từ máy
-										tính của bạn.</div>
-									<div class="form-text" th:if="${category.images != null}">
-										Tệp hiện tại: <span th:text="${category.images}"></span>
-									</div>
-									<div th:if="${category.images != null}">
-										<img th:src="@{'/image/' + ${category.images}}"
-											alt="Ảnh hiện tại" class="img-thumbnail mt-2"
-											style="max-width: 120px;">
-									</div>
-								</div>
+
+                                                                <div class="mb-3">
+                                                                        <label class="form-label" for="categoryImages">Hình ảnh</label>
+                                                                        <input id="categoryImages" type="file" class="form-control" th:field="*{imageFile}" th:classappend="${#fields.hasErrors('imageFile')} ? ' is-invalid' : ''">
+                                                                        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('imageFile')}" th:errors="*{imageFile}"></div>
+                                                                        <div class="form-text text-muted">Chọn hình ảnh từ máy tính của bạn.</div>
+                                                                        <div class="form-text" th:if="${category.images != null}">
+                                                                            Tệp hiện tại: <span th:text="${category.images}"></span>
+                                                                        </div>
+                                                                        <div th:if="${category.images != null}">
+                                                                            <img th:src="@{'/image/' + ${category.images}}" alt="Ảnh hiện tại" class="img-thumbnail mt-2" style="max-width: 120px;">
+                                                                        </div>
+                                                                </div>
+
 
 								<div class="d-flex justify-content-end gap-2">
 									<a class="btn btn-outline-secondary"

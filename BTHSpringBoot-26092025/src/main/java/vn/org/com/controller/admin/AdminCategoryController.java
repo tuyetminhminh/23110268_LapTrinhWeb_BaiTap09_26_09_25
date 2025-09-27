@@ -28,6 +28,7 @@ import java.util.stream.IntStream;
 public class AdminCategoryController {
 
     private final CategoryService categoryService;
+    private final FileStorageService fileStorageService;
 
     private final FileStorageService fileStorageService;
 
@@ -99,8 +100,40 @@ public class AdminCategoryController {
                        @RequestParam(name = "name", defaultValue = "") String name,
                        Model model,
                        RedirectAttributes redirectAttributes) {
-        if (categoryService.nameExists(form.getName(), form.getId())) {
-            result.rejectValue("name", "category.name.duplicate", "Tên thể loại đã tồn tại");
+        if (form.getName() != null) {
+            form.setName(form.getName().trim().replaceAll("\\s+", " "));
+        }
+
+        Category existing = null;
+        if (Boolean.TRUE.equals(form.getIsEdit()) && form.getId() != null) {
+            existing = categoryService.findById(form.getId()).orElse(null);
+            if (existing == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy thể loại để cập nhật.");
+                return buildRedirectUrl(page, size, name);
+            }
+        }
+
+        if (form.getName() != null && !form.getName().isBlank()) {
+            if (categoryService.nameExists(form.getName(), form.getId())) {
+                result.rejectValue("name", "category.name.duplicate", "Tên thể loại đã tồn tại");
+            }
+        }
+
+        if (!result.hasErrors()) {
+            String oldImagePath = existing != null ? existing.getImages() : form.getImages();
+            try {
+                String storedPath = fileStorageService.store(form.getImageFile(), "images");
+                if (storedPath != null) {
+                    if (Boolean.TRUE.equals(form.getIsEdit())) {
+                        fileStorageService.deleteIfExists(oldImagePath);
+                    }
+                    form.setImages(storedPath);
+                } else if (existing != null) {
+                    form.setImages(existing.getImages());
+                }
+            } catch (IOException e) {
+                result.rejectValue("imageFile", "category.image.upload", "Không thể lưu hình ảnh");
+            }
         }
         if (!result.hasErrors()) {
             String oldImagePath = form.getImages();
@@ -124,13 +157,12 @@ public class AdminCategoryController {
             return "admin/categories/addOrEdit";
         }
 
-        Category entity = Category.builder()
-                .id(form.getId())
-                .name(form.getName())
-                .images(form.getImages())
-                .build();
+        Category entity = existing != null ? existing : new Category();
+        entity.setName(form.getName());
+        entity.setImages(form.getImages());
+
         categoryService.save(entity);
-        redirectAttributes.addFlashAttribute("message", form.getId() == null ? "Thêm thể loại thành công" : "Cập nhật thể loại thành công");
+        redirectAttributes.addFlashAttribute("message", existing == null ? "Thêm thể loại thành công" : "Cập nhật thể loại thành công");
         return buildRedirectUrl(page, size, name);
     }
 
@@ -140,6 +172,19 @@ public class AdminCategoryController {
                          @RequestParam(name = "size", defaultValue = "10") int size,
                          @RequestParam(name = "name", defaultValue = "") String name,
                          RedirectAttributes redirectAttributes) {
+        Optional<Category> categoryOpt = categoryService.findById(id);
+        if (categoryOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy thể loại để xóa.");
+            return buildRedirectUrl(page, size, name);
+        }
+
+        Category category = categoryOpt.get();
+        try {
+            fileStorageService.deleteIfExists(category.getImages());
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa hình ảnh cũ của thể loại.");
+        }
+
         categoryService.deleteById(id);
         redirectAttributes.addFlashAttribute("message", "Đã xóa thể loại");
         return buildRedirectUrl(page, size, name);
@@ -149,10 +194,13 @@ public class AdminCategoryController {
         int pageIndex = Math.max(0, page - 1);
         int pageSize = Math.max(1, size);
         Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Category> categoryPage = categoryService.search(name, pageable);
+        String keyword = name == null ? "" : name.trim();
+        Page<Category> categoryPage = categoryService.search(keyword, pageable);
         model.addAttribute("categoryPage", categoryPage);
-        model.addAttribute("name", name == null ? "" : name.trim());
+        model.addAttribute("name", keyword);
+
         model.addAttribute("size", pageSize);
+        model.addAttribute("current", page);
         List<Integer> pageNumbers = (categoryPage.getTotalPages() > 0)
                 ? IntStream.rangeClosed(1, categoryPage.getTotalPages()).boxed().toList()
                 : List.of();
@@ -160,14 +208,17 @@ public class AdminCategoryController {
     }
 
     private String buildRedirectUrl(int page, int size, String name) {
-        return "redirect:" + UriComponentsBuilder
-                .fromPath("/admin/categories/searchpaginated")
+
+        String trimmedName = name == null ? "" : name.trim();
+        String target = UriComponentsBuilder.fromPath("/admin/categories/searchpaginated")
                 .queryParam("page", page)
                 .queryParam("size", size)
-                .queryParam("name", (name == null ? "" : name.trim()))
+                .queryParam("name", trimmedName)
+
                 .build()
                 .encode()      // quan trọng cho tiếng Việt
                 .toUriString();
+        return "redirect:" + target;
     }
 
 }

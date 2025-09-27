@@ -18,6 +18,9 @@ public class CategoryModel {
 	private MultipartFile imageFile;
 	private Boolean isEdit = false;
 
+    private MultipartFile imageFile;
+
+    private Boolean isEdit = false;
 	public Long getId() {
 		return id;
 	}
@@ -33,6 +36,12 @@ public class CategoryModel {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+    public MultipartFile getImageFile() { return imageFile; }
+    public void setImageFile(MultipartFile imageFile) { this.imageFile = imageFile; }
+
+    public Boolean getIsEdit() { return isEdit; }
+    public void setIsEdit(Boolean isEdit) { this.isEdit = isEdit; }
 
 	public String getImages() {
 		return images;

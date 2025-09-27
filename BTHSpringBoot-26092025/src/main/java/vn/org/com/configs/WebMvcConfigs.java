@@ -1,19 +1,25 @@
 package vn.org.com.configs;
 
+import java.nio.file.Paths;
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 @Configuration
 public class WebMvcConfigs implements WebMvcConfigurer {
+
+    @Value("${app.upload.dir:uploads}")
+    private String uploadDir;
 
     @Bean(name = "localeResolver")
     public LocaleResolver getLocaleResolver() {
@@ -33,8 +39,18 @@ public class WebMvcConfigs implements WebMvcConfigurer {
     }
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-		LocaleChangeInterceptor localeInterceptor = new LocaleChangeInterceptor();
-		localeInterceptor.setParamName("language");
-		registry.addInterceptor(localeInterceptor).addPathPatterns("/*");
-	}
+                LocaleChangeInterceptor localeInterceptor = new LocaleChangeInterceptor();
+                localeInterceptor.setParamName("language");
+                registry.addInterceptor(localeInterceptor).addPathPatterns("/*");
+        }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String location = Paths.get(uploadDir).toAbsolutePath().normalize().toUri().toString();
+        if (!location.endsWith("/")) {
+            location = location + "/";
+        }
+        registry.addResourceHandler("/image/**")
+                .addResourceLocations(location);
+    }
 }

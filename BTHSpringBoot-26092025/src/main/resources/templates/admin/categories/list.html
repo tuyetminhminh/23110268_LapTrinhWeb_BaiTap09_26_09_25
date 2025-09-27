@@ -27,8 +27,10 @@
 			</div>
 		</form>
 
-		<div th:if="${message}" class="alert alert-success"
-			th:text="${message}"></div>
+                <div th:if="${message}" class="alert alert-success"
+                        th:text="${message}"></div>
+                <div th:if="${errorMessage}" class="alert alert-danger"
+                        th:text="${errorMessage}"></div>
 
 		<div class="table-responsive">
 			<table class="table table-hover table-striped align-middle shadow-sm rounded">
