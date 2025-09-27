@@ -30,6 +30,8 @@ public class AdminCategoryController {
     private final CategoryService categoryService;
     private final FileStorageService fileStorageService;
 
+    private final FileStorageService fileStorageService;
+
     @GetMapping
     public String list(@RequestParam(name = "name", defaultValue = "") String name,
                        @RequestParam(name = "page", defaultValue = "1") int page,
@@ -133,11 +135,25 @@ public class AdminCategoryController {
                 result.rejectValue("imageFile", "category.image.upload", "Không thể lưu hình ảnh");
             }
         }
+        if (!result.hasErrors()) {
+            String oldImagePath = form.getImages();
+            try {
+                String storedPath = fileStorageService.store(form.getImageFile(), "images");
+                if (storedPath != null) {
+                    if (Boolean.TRUE.equals(form.getIsEdit())) {
+                        fileStorageService.deleteIfExists(oldImagePath);
+                    }
+                    form.setImages(storedPath);
+                }
+            } catch (IOException e) {
+                result.rejectValue("imageFile", "category.image.upload", "Không thể lưu hình ảnh");
+            }
+        }
 
         if (result.hasErrors()) {
             model.addAttribute("page", page);
             model.addAttribute("size", size);
-            model.addAttribute("name", name);
+            model.addAttribute("name", name == null ? "" : name.trim());
             return "admin/categories/addOrEdit";
         }
 
@@ -182,6 +198,7 @@ public class AdminCategoryController {
         Page<Category> categoryPage = categoryService.search(keyword, pageable);
         model.addAttribute("categoryPage", categoryPage);
         model.addAttribute("name", keyword);
+
         model.addAttribute("size", pageSize);
         model.addAttribute("current", page);
         List<Integer> pageNumbers = (categoryPage.getTotalPages() > 0)
@@ -191,13 +208,17 @@ public class AdminCategoryController {
     }
 
     private String buildRedirectUrl(int page, int size, String name) {
+
         String trimmedName = name == null ? "" : name.trim();
         String target = UriComponentsBuilder.fromPath("/admin/categories/searchpaginated")
                 .queryParam("page", page)
                 .queryParam("size", size)
                 .queryParam("name", trimmedName)
+
                 .build()
+                .encode()      // quan trọng cho tiếng Việt
                 .toUriString();
         return "redirect:" + target;
     }
+
 }

@@ -13,16 +13,20 @@
 				<div class="col-12 col-md-7 col-lg-5">
 					<div class="card shadow-sm">
 						<div class="card-header bg-brand text-white">
-                                                        <strong
-                                                                th:text="${category.id} != null ? 'Cập nhật thể loại' : 'Thêm thể loại'">Thêm
-                                                                thể loại</strong>
-                                                </div>
-                                                <div class="card-body">
-                                                        <form th:action="@{/admin/categories/saveOrUpdate}"
-      th:object="${category}" method="post" enctype="multipart/form-data" novalidate>
-                                                                <!-- id & cờ isEdit -->
-                                                                <input type="hidden" th:field="*{id}"> <input
-                                                                        type="hidden" th:field="*{isEdit}">
+							<strong
+								th:text="${category.id} != null ? 'Cập nhật thể loại' : 'Thêm thể loại'">Thêm
+								thể loại</strong>
+						</div>
+						<div class="card-body">
+							<form th:action="@{/admin/categories/saveOrUpdate}" method="post"
+								enctype="multipart/form-data" th:object="${category}">
+
+								<!-- id & cờ isEdit -->
+								<input type="hidden" th:field="*{id}"> <input
+									type="hidden" th:field="*{isEdit}">
+
+								<!-- giữ đường dẫn hình hiện tại khi chỉnh sửa -->
+								<input type="hidden" th:field="*{images}">
 
                                                                 <!-- giữ đường dẫn hình hiện tại khi chỉnh sửa -->
                                                                 <input type="hidden" th:field="*{images}">
@@ -33,18 +37,18 @@
 									type="hidden" name="name" th:value="${name}">
 
 								<div class="mb-3">
-                                                                        <label class="form-label" for="categoryName">Tên thể
-                                                                                loại</label> <input id="categoryName" type="text" class="form-control"
-                                                                                th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"
-                                                                                th:field="*{name}" placeholder="Nhập tên thể loại...">
-                                                                        <div class="invalid-feedback"
-                                                                                th:if="${#fields.hasErrors('name')}"
-                                                                                th:errors="*{name}">
-                                                                                <!-- sẽ hiện messages_vi.properties -->
-                                                                        </div>
-                                                                        <div class="form-text text-muted">Ví dụ: Bánh Chưng, Bánh
-                                                                                Tét...</div>
-                                                                </div>
+									<label class="form-label" for="categoryName">Tên thể
+										loại</label> <input id="categoryName" type="text" class="form-control"
+										th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"
+										th:field="*{name}" placeholder="Nhập tên thể loại...">
+									<div class="invalid-feedback"
+										th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+										<!-- sẽ hiện messages_vi.properties -->
+									</div>
+									<div class="form-text text-muted">Ví dụ: Bánh, Kẹo, Sữa
+										tươi, Sữa chua,...</div>
+								</div>
+
 
                                                                 <div class="mb-3">
                                                                         <label class="form-label" for="categoryImages">Hình ảnh</label>
@@ -58,6 +62,7 @@
                                                                             <img th:src="@{'/image/' + ${category.images}}" alt="Ảnh hiện tại" class="img-thumbnail mt-2" style="max-width: 120px;">
                                                                         </div>
                                                                 </div>
+
 
 								<div class="d-flex justify-content-end gap-2">
 									<a class="btn btn-outline-secondary"
